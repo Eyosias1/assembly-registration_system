@@ -51,9 +51,29 @@ Pour exécuter ce programme, vous devez avoir un assembleur x86 et un environnem
 
 ## Enregistrement d'un employer
 
+L'enregistrement d'un employer ce fait en plusieurs étapes.
+Dans un premier temps nous créant. 
+Un espace pour 100 employer. 
+``employes: times 1000 db 0`` car nous supposons que un employer au maximum prend 20 octets (``employeSize: equ 20``  ) ceci ce base sur la réaliter pour aussi permettre a une compilation plus rapide.
+
+
+1. Il faut demander a l'utilisateur de saisir le **nom** et **l'age.**
+2. Une fois saisie nous allons vérifier si le nombre d'employer maximum n'est pas atteint. Si oui on affiche un message d'alert et on redirige vers le menu pour utiliser options ou fonctionnalités sinon on calcul le offset pour commencer a charger le nom et age de l'employer.
+    ```
+    mov al, [nbEmployes]
+    imul eax, eax, employeSize
+    mov edi, employes
+    ```
+    Après avoir trouver l'addresse pour charger on boucle et on charge jusqu'a trouver un retour a la ligne ce qui marque la fin de la saisie.
+3. Après avoir chargé l'employer on incrémente le nombre d'employer total et on recharge le menu.
+
+## Lister les employés
+Pour lister les employé ils nous faut savoir au début le nombre d'employer courrant grace à la fonctionnaliter Enregistrement ensuite ils nous faut un compteur pour boucler tout a long.
+1. Dans un premier temps nous comparons si le compteur a atteint le nombre d'employer courant. si atteint nous quittons et nous revenons au menu sinon nous poursuivons.
+2. Nous parcourons notre espace employer et nous affichons le nom et l'age tout en vérifions si le caractère suivant n'est pas un retour a la ligne ce qui marque le prochain employer. et nous répetons ce processus jusqu'a que le compteur soit égale au nombre d'employer. 
 
 ## Auteurs
 
 - **Woldemichael Eyosias**
-- **Djiakité Madina**
+- **Diakité Madina**
 
