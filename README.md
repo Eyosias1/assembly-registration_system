@@ -70,8 +70,23 @@ Un espace pour 100 employer.
 ## Lister les employés
 Pour lister les employé ils nous faut savoir au début le nombre d'employer courrant grace à la fonctionnaliter Enregistrement ensuite ils nous faut un compteur pour boucler tout a long.
 1. Dans un premier temps nous comparons si le compteur a atteint le nombre d'employer courant. si atteint nous quittons et nous revenons au menu sinon nous poursuivons.
-2. Nous parcourons notre espace employer et nous affichons le nom et l'age tout en vérifions si le caractère suivant n'est pas un retour a la ligne ce qui marque le prochain employer. et nous répetons ce processus jusqu'a que le compteur soit égale au nombre d'employer. 
+    ```
+        mov al, [compteur]
+        mov bl, [nbEmployes]
+        cmp al, bl
+    ```
+2. Nous parcourons notre espace employer et nous affichons le nom et l'age tout en vérifions si le caractère suivant n'est pas un retour a la ligne ce qui marque le prochain employer.
+    ```
+        mov al, [esi]
+        inc esi
+        cmp al, 10 
+    ```
+    Et nous répetons ce processus jusqu'a que le compteur soit égale au nombre d'employer.
 
+## Afficher un employé spécifique
+ pas implémenter pour l'instant
+## Afficher âge moyen
+ pas implémenter pour l'instant
 ## Auteurs
 
 - **Woldemichael Eyosias**

@@ -199,6 +199,15 @@ affiche_nombre:
         cmp eax, -1
     jne afficher_nb
     ret
+
+;/////////////////////////////////////////////
+;         fonction neccessaire pour          /
+;         afficher employer spécifique       /
+;                                            /
+;/////////////////////////////////////////////
+
+
+
 quitterProgramme:
     mov eax, 1              ; syscall pour quitter
     xor ebx, ebx            ; code de retour 0
