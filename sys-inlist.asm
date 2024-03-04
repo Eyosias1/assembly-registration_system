@@ -23,12 +23,16 @@ message_menu_choix: db "Votre choix :", 32
 message_menu_choixLength: equ $-message_menu_choix
 message_alert_choix: db 9,9,9,"MAUVAISE SAISIE ECRIVER UN CHIFFRE !!! ", 10
 message_alert_choixLength: equ $-message_alert_choix
+newline: db 10  ; newline
+espace: db 32 ; espace
+inputBufferone: times 2 db 0            ; alloue 2 bytes pour input (chiffre) et pour le saut de ligne   
 section .text
 
 global _start
 
 _start:
     call afficherMenu
+    call lireChoix
     ; Traiter le choix
     ; cmp eax, 1
     ; je enregistrerEmploye
@@ -43,8 +47,8 @@ _start:
     jmp _start
 
 ;/////////////////////////////////////////////
-;         fonction de affichage de menu      /
-;                                            /
+;         fonction de affichage de           /
+;                  message                   /
 ;                                            /
 ;/////////////////////////////////////////////
 afficherMenu:
@@ -84,4 +88,22 @@ afficheMessageID:
     mov ecx, message_Id                                   ; Pointeur vers le début du message à afficher
     mov edx, message_IdLength                             ; Longueur du message à afficher
     int 0x80                                        ; Appeler le kernel Linux
+    ret
+
+;/////////////////////////////////////////////
+;         fonction neccessaire pour          /
+;         Enregistrement d'un employer       /
+;                                            /
+;/////////////////////////////////////////////
+
+lireChoix:
+    call afficheMessageVotre_choix
+    mov eax, 3                      ; sys_read
+    mov ebx, 0                      ; Descripteur de fichier pour stdin
+    mov ecx, inputBufferone         ; Adresse du tampon d'entrée
+    mov edx, 2                      ; Nombre d'octets à lire
+    int 0x80                        ; Appel au noyau
+    mov al, [inputBufferone]        ; Déplace le premier octet dans al
+    sub al, '0'                     ; Convertit ASCII en entier
+    mov ah, 0                       ; Nettoie ah pour éviter la contamination des données
     ret
