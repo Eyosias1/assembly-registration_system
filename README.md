@@ -1,6 +1,9 @@
 # Système d'Enregistrement des Employés
 Ce programme en langage d'assemblage permet d'enregistrer des employés, de lister tous les employés enregistrés, d'afficher un employé spécifique, de trouver l'age moyen des employés et de quitter le programme.
 
+Pour exécuter ce programme, vous devez avoir un assembleur x86 et un environnement capable d'exécuter des programmes en langage d'assemblage. Voici les étapes à suivre pour assembler et exécuter le programme :
+
+## Utilisation
 1. Installer nasm si on a pas fait:
     ```
     sudo apt install nasm
@@ -26,22 +29,7 @@ Ce programme en langage d'assemblage permet d'enregistrer des employés, de list
 - **Trouver l'age moyen**: Identifie l'age moyen de tous les employés.
 - **Quitter**: Termine l'exécution du programme.
 
-## Utilisation
 
-Pour exécuter ce programme, vous devez avoir un assembleur x86 et un environnement capable d'exécuter des programmes en langage d'assemblage. Voici les étapes à suivre pour assembler et exécuter le programme :
-
-1. Assemblez le programme avec votre assembleur préféré. Par exemple, en utilisant NASM :
-    ```
-    nasm -f elf64 mon_programme.asm -o mon_programme.o
-    ```
-2. Liez le fichier objet pour créer l'exécutable :
-    ```
-    ld mon_programme.o -o mon_programme
-    ```
-3. Exécutez le programme :
-    ```
-    ./mon_programme
-    ```
 
 ## Structure du Projet
 
@@ -84,7 +72,38 @@ Pour lister les employés il nous faut savoir au début le nombre d'employés co
     Et nous répetons ce processus jusqu'a que le compteur soit égal au nombre d'employés .
 
 ## Afficher un employé spécifique
- pas implémenter pour l'instant
+
+## Afficher un employé spécifique
+
+Cette fonctionnalité permet à l'utilisateur de rechercher et d'afficher les informations d'un employé spécifique par son identifiant, qui correspond à l'ordre d'enregistrement de l'employé dans le système (par exemple, le premier employé enregistré a l'identifiant 1, le deuxième a l'identifiant 2, et ainsi de suite).
+
+Pour réaliser cette opération, le programme procède comme suit :
+
+1. **Demande d'Identifiant :** Le programme invite l'utilisateur à saisir l'identifiant de l'employé qu'il souhaite afficher.
+   
+2. **Validation de la Saisie :** Le programme vérifie que l'identifiant saisi correspond bien à un employé existant. Si l'identifiant est invalide (c'est-à-dire, s'il dépasse le nombre d'employés enregistrés), un message d'erreur est affiché et l'utilisateur est invité à essayer à nouveau.
+
+3. **Recherche de l'Employé :** Le programme parcourt la liste des employés enregistrés jusqu'à trouver celui qui correspond à l'identifiant saisi.
+
+4. **Affichage des Informations :** Une fois l'employé trouvé, le programme affiche son identifiant, son nom et son âge.
+
+### Code d'implémentation
+
+La fonction d'affichage d'un employé spécifique utilise les instructions suivantes pour parcourir la liste des employés et afficher les informations de celui qui correspond à l'identifiant saisi :
+
+```asm
+; Supposons que inputBuffer contienne l'identifiant saisi par l'utilisateur
+mov esi, inputBuffer  ; Pointeur vers l'identifiant saisi
+; Convertit l'identifiant de ASCII en nombre
+; Recherche de l'employé
+; Affichage des informations
+``````
+#### Cas D'utilisations
+Veuillez entrer 
+l'identifiant de l'employé : 2  
+Nom: John Doe  
+Âge: 30 ans
+
 ## Afficher âge moyen
  pas implémenter pour l'instant
 ## Quitter le programme

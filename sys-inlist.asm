@@ -17,6 +17,8 @@ message_cherche: db "Cherche la personne :", 10
 message_chercheLength: equ $-message_cherche
 message_alert: db "No such person!", 10
 message_alertLength: equ $-message_alert
+message_alert1: db "For the moment no mean of employee age!", 10, "Because there a no employes !!!"
+message_alert1Length: equ $-message_alert1
 message_age: db "Age en moyenne :", 10
 message_ageLength: equ $-message_age
 message_menu_choix: db "Votre choix :", 32
@@ -35,7 +37,7 @@ BufferLength: equ $-Buffer              ; Longueur du buffer
 compteur: db 0 
 compteur_add_spec: db 0                 ; address spécifique en saut
 tmp: db 0
-value: db 0
+value: dw 0
 exchangeTmp: db 0                       ; variable d'échange entre deux registre
 employes: times 1000 db 0               ; Espace pour 100 employés avec 10 octets par employé (exemple simplifié)      
 employeSize: equ 20                     ; Taille d'un employé en octets (nom + âge + newline)
@@ -54,18 +56,18 @@ _start:
     je enregistrerEmploye
     cmp eax, 2
     je listerEmployes
-    ; cmp eax, 3
-    ;je lireChoixAfficheEmply
-    ;cmp eax, 4
-    ;je trouverAgeMoyen
-    ;cmp eax, 5
-    ;je quitterProgramme
+    cmp eax, 3
+    je lireChoixAfficheEmply
+    cmp eax, 4
+    je trouverAgeMoyen
+    cmp eax, 5
+    je quitterProgramme
     jmp _start
 
 
 ;/////////////////////////////////////////////
 ;         fonction neccessaire pour          /
-;         Enregistrement d'un employer       /
+;         La lecture de la saisie.           /
 ;                                            /
 ;/////////////////////////////////////////////
 
@@ -80,6 +82,27 @@ lireChoix:
     sub al, '0'                     ; Convertit ASCII en entier
     mov ah, 0                       ; Nettoie ah pour éviter la contamination des données
     ret
+
+lireChoixAfficheEmply:
+    call afficherMessageCherche
+    call newlinefunc
+    call afficheMessageID
+    mov eax, 3                      ; sys_read
+    mov ebx, 0                      ; Descripteur de fichier pour stdin
+    mov ecx, inputBuffer            ; Adresse du tampon d'entrée
+    mov edx, 2                      ; Nombre d'octets à lire
+    int 0x80                        ; Appel au noyau
+    call newlinefunc
+    call afficherEmploye
+    call newlinefunc
+    jmp _start
+
+
+;/////////////////////////////////////////////
+;         fonction neccessaire pour          /
+;         Enregistrement d'un employer       /
+;                                            /
+;/////////////////////////////////////////////
 
 enregistrerEmploye:
     call afficherMessageEnre
@@ -174,6 +197,177 @@ listerEmployes:
     jmp _start
 
 
+;/////////////////////////////////////////////
+;         fonction neccessaire pour          /
+;         afficher employer spécifique       /
+;                                            /
+;/////////////////////////////////////////////
+afficherEmploye:
+    mov esi, inputBuffer            ; Pointeur source vers inputBuffer
+    char_to_chifre:
+        push 0
+        debut_chiffre:
+        ; extraire l'chiffree
+        mov al, [esi]                   ; Charger le caractère de l'âge en al
+        inc esi
+        cmp al, '0'                     ; verifier si c'est un nombre
+        jl fin_chiffre                      ; sinon quitter
+        cmp al, '9'                     ; verifier si c'est un nombre
+        jg fin_chiffre                      ; sinon quitter
+        sub al, '0'                     ; Convertir de ASCII à entier
+        pop ebx
+        imul ebx, ebx, 10
+        add ebx, eax
+        push ebx
+        jmp debut_chiffre
+    fin_chiffre:
+    pop ebx 
+    mov [tmp], bl                   ; Stocker chiffre
+    mov bl, [nbEmployes]
+    cmp [tmp], bl
+    jg no_person
+    mov byte [compteur], 1
+    mov esi, employes
+    boucle_cherche:
+        mov al, [compteur]
+        cmp al, [tmp]
+        je affiche_nom_chercher
+        mov bl, [esi]
+        cmp bl, 10
+        jne next_char
+        inc byte [compteur]
+        next_char:
+        inc esi
+    jmp boucle_cherche
+    affiche_nom_chercher:
+        mov al, [compteur]
+        mov [tmp], al
+        call affiche_nombre
+        call space_func
+        afnm:
+            mov al, [esi]                   ; Charger le caractère courant dans AL
+            inc esi                         ; Passer au caractère suivant dans le buffer
+            cmp al, 10                      ; Vérifier si nous avons atteint la fin de la chaîne
+            je fin_affiche_nom_chercher                  ; Si c'est la fin, sortir de la boucle
+            cmp al, '0'                     ; Vérifier si le caractère est un chiffre ('0')
+            jl not_digite                    ; Si AL >= '0', pourrait être un chiffre
+            cmp al, '9'                     ; Vérifier si c'est en dessous ou égal à '9'
+            jg not_digite                    ; Si AL <= '9', c'est un chiffre, terminer la boucle
+            jmp est_chiffre_chr
+            not_digite:
+                mov [tmp], al
+                mov eax, 4                      ; sys_write
+                mov ebx, 1
+                mov ecx, tmp                    ; Pointeur vers le caractère courant                        ; sys_write nécessite l'adresse du début des données à écrire
+                mov edx, 1                      ; Nombre d'octets à écrire
+                int 0x80                        ; Appel système pour écrire
+            jmp afnm                            ; Continuer la boucle
+            est_chiffre_chr:
+                mov [tmp], al
+                sub byte [tmp], '0'
+                call affiche_nombre
+        jmp afnm
+    no_person:
+    call afficherMessageAlert 
+    fin_affiche_nom_chercher:
+    mov byte [compteur], 0
+    ret
+
+;/////////////////////////////////////////////
+;         fonction neccessaire pour          /
+;         afficher age  moyen.               /
+;                                            /
+;/////////////////////////////////////////////
+trouverAgeMoyen:
+    mov esi, employes
+    mov dword [value], 0
+    trouverAgeMoyen_boucle:
+        cmp byte [nbEmployes], 0
+        je fin_trouverAgeMoyen1
+        mov ebx, Buffer
+        mov al, [esi]                   ; Charger le caractère courant dans AL
+        inc esi                         ; Passer au caractère suivant dans le buffer
+        mov dl, [compteur]
+        mov ecx, [nbEmployes]
+        cmp dl, cl
+        je fin_trouverAgeMoyen
+        cmp al, 10                      ; Vérifier si nous avons atteint la fin de la chaîne
+        je  fin_trouverAgeMoyen                 ; Si c'est la fin, sortir de la boucle
+        cmp al, '0'                     ; Vérifier si le caractère est un chiffre ('0')
+        jl not_digite_age                    ; Si AL >= '0', pourrait être un chiffre
+        cmp al, '9'                     ; Vérifier si c'est en dessous ou égal à '9'
+        jg not_digite_age                    ; Si AL <= '9', c'est un chiffre, terminer la boucle
+        jmp est_chiffre_chr_age
+        not_digite_age:
+        jmp trouverAgeMoyen_boucle            ; Continuer la boucle
+        est_chiffre_chr_age:
+            mov [exchangeTmp], al
+            mov eax, [exchangeTmp]
+            mov [ebx], eax
+            inc ebx
+            mov al, [esi]
+            inc esi
+            cmp al, 10                      ; Vérifier si nous avons atteint la fin de la chaîne
+            je fin_est_chiffre_age                             ; Si c'est la fin, sortir de la boucle
+            cmp al, '0'                     ; Vérifier si le caractère est un chiffre ('0')
+            jl trouverAgeMoyen_boucle                    ; Si AL >= '0', pourrait être un chiffre
+            cmp al, '9'                         ; Vérifier si c'est en dessous ou égal à '9'
+            jg trouverAgeMoyen_boucle                    ; Si AL <= '9', c'est un chiffre, terminer la boucle
+        jmp est_chiffre_chr_age
+        fin_est_chiffre_age:
+            mov [exchangeTmp], al
+            mov eax, [exchangeTmp]
+            mov [ebx], eax
+            inc ebx
+            mov edi, Buffer
+            char_to_chifre_age:
+                push 0
+                debut_chiffre_age:
+                    ; extraire l'chiffree
+                    mov al, [edi]                   ; Charger le caractère de l'âge en al
+                    inc edi
+                    cmp al, '0'                     ; verifier si c'est un nombre
+                    jl fin_chiffre_age                      ; sinon quitter
+                    cmp al, '9'                     ; verifier si c'est un nombre
+                    jg fin_chiffre_age                      ; sinon quitter
+                    sub al, '0'                     ; Convertir de ASCII à entier
+                    pop ebx
+                    imul ebx, ebx, 10
+                    add ebx, eax
+                    push ebx
+                jmp debut_chiffre_age
+        fin_chiffre_age:
+        inc  byte [compteur]
+        pop ebx
+        add [value], ebx
+    jmp trouverAgeMoyen_boucle
+    fin_trouverAgeMoyen1:
+    call afficherMessageAlert1
+    jmp _start
+    fin_trouverAgeMoyen:
+    xor ecx, ecx         ; This sets the entire ecx register to 0
+    mov cl, [nbEmployes]
+    mov eax, [value]
+    xor edx, edx  
+    idiv ecx
+    mov [tmp], al
+    call newlinefunc
+    call afficherMessageAge
+    call affiche_nombre
+    call newlinefunc
+    jmp _start
+
+
+quitterProgramme:
+    mov eax, 1              ; syscall pour quitter
+    xor ebx, ebx            ; code de retour 0
+    int 0x80                ; interrompre pour quitter
+
+;/////////////////////////////////////////////
+;         fonction de affichage de           /
+;                  message                   /
+;                                            /
+;/////////////////////////////////////////////
 affiche_nombre:
     push -1
     mov al, [tmp]
@@ -200,24 +394,6 @@ affiche_nombre:
     jne afficher_nb
     ret
 
-;/////////////////////////////////////////////
-;         fonction neccessaire pour          /
-;         afficher employer spécifique       /
-;                                            /
-;/////////////////////////////////////////////
-
-
-
-quitterProgramme:
-    mov eax, 1              ; syscall pour quitter
-    xor ebx, ebx            ; code de retour 0
-    int 0x80                ; interrompre pour quitter
-
-;/////////////////////////////////////////////
-;         fonction de affichage de           /
-;                  message                   /
-;                                            /
-;/////////////////////////////////////////////
 afficherMenu:
     mov eax, 4                                      ; syscall write
     mov ebx, 1                                      ; fd (file descriptor) pour stdout
@@ -293,6 +469,14 @@ afficherMessageAlert:
     mov ebx, 1                                      ; fd (file descriptor) pour stdout
     mov ecx, message_alert                        ; Pointeur vers le début du message à afficher
     mov edx, message_alertLength                  ; Longueur du message à afficher
+    int 0x80                                        ; Appeler le kernel Linux
+    call newlinefunc
+    ret
+afficherMessageAlert1:
+    mov eax, 4                                      ; syscall write
+    mov ebx, 1                                      ; fd (file descriptor) pour stdout
+    mov ecx, message_alert1                        ; Pointeur vers le début du message à afficher
+    mov edx, message_alert1Length                  ; Longueur du message à afficher
     int 0x80                                        ; Appeler le kernel Linux
     call newlinefunc
     ret
