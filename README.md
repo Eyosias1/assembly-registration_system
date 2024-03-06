@@ -138,3 +138,5 @@ fonctionnalité  implémenter
 - **Woldemichael Eyosias**
 - **Diakité Madina**
 
+Vous pouvez trouver le détaille du code, ainsi que les différentes étapes venant à la conclusion.      
+Ici 👉 [link to project](https://github.com/Eyosias1/assembly-registration_system).
