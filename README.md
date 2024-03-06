@@ -5,19 +5,19 @@ Pour exécuter ce programme, vous devez avoir un assembleur x86 et un environnem
 
 ## Utilisation
 1. Installer nasm si on a pas fait:
-    ```
+    ```bash
     sudo apt install nasm
     ```
 2. Assemblez le programme en utilisant NASM :
-    ```
+    ```bash
     nasm -f elf sys-inlist.asm
     ```
 3. Liez le fichier objet pour créer l'exécutable :
-    ```
+    ```bash
      ld -m elf_i386 -o sys-inlist.elf sys-inlist.o
     ```
 4. Exécutez le programme :
-    ```
+    ```bash
     ./sys-inlist.elf 
     ```
 
@@ -47,7 +47,7 @@ Un espace pour 100 employés.
 
 1. Il faut demander a l'utilisateur de saisir le **nom** et **l'age.**
 2. Une fois saisie nous allons vérifier si le nombre d'employé maximum n'est pas atteint. Si oui on affiche un message d'alert et on se  redirige vers le menu pour utiliser les  options ou fonctionnalités sinon on calcul le offset pour commencer à charger le nom et age de l'employé.
-    ```
+    ```asm
     mov al, [nbEmployes]
     imul eax, eax, employeSize
     mov edi, employes
@@ -58,13 +58,13 @@ Un espace pour 100 employés.
 ## Lister les employés
 Pour lister les employés il nous faut savoir au début le nombre d'employés courant grace à la fonctionnalités Enregistrement ensuite il nous faut un compteur pour boucler tout au long.
 1. Dans un premier temps nous comparons si le compteur a atteint le nombre d'employés courant. si atteint nous quittons et nous revenons au menu sinon nous poursuivons.
-    ```
+    ```asm
         mov al, [compteur]
         mov bl, [nbEmployes]
         cmp al, bl
     ```
 2. Nous parcourons notre espace employé et nous affichons le nom et l'age tout en vérifiant si le caractère suivant n'est pas un retour a la ligne ce qui marque le prochain employé.
-    ```
+    ```asm
         mov al, [esi]
         inc esi
         cmp al, 10 
