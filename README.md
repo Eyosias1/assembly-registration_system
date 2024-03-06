@@ -73,8 +73,6 @@ Pour lister les employés il nous faut savoir au début le nombre d'employés co
 
 ## Afficher un employé spécifique
 
-## Afficher un employé spécifique
-
 Cette fonctionnalité permet à l'utilisateur de rechercher et d'afficher les informations d'un employé spécifique par son identifiant, qui correspond à l'ordre d'enregistrement de l'employé dans le système (par exemple, le premier employé enregistré a l'identifiant 1, le deuxième a l'identifiant 2, et ainsi de suite).
 
 Pour réaliser cette opération, le programme procède comme suit :
