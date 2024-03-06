@@ -3,6 +3,17 @@ Ce programme en langage d'assemblage permet d'enregistrer des employés, de list
 
 Pour exécuter ce programme, vous devez avoir un assembleur x86 et un environnement capable d'exécuter des programmes en langage d'assemblage. Voici les étapes à suivre pour assembler et exécuter le programme :
 
+1. [Utilisation](#utilisation)
+2. [Fonctionnalités](#fonctionnalités)
+2. [Structure du projet](#structure-du-projet)
+2. [Enregistrement dun employer](#enregistrement-dun-employer)
+2. [Lister les employés](#lister-les-employés)
+2. [Afficher un employé spécifique](#afficher-un-employé-spécifique)
+2. [Afficher âge moyen](#afficher-âge-moyen)
+
+
+
+
 ## Utilisation
 1. Installer nasm si on a pas fait:
     ```bash
@@ -95,7 +106,7 @@ mov esi, inputBuffer  ; Pointeur vers l'identifiant saisi
 ; Convertit l'identifiant de ASCII en nombre
 ; Recherche de l'employé
 ; Affichage des informations
-``````
+```
 #### Cas D'utilisations
 Veuillez entrer 
 l'identifiant de l'employé : 2  
