@@ -104,8 +104,35 @@ l'identifiant de l'employé : 2
 Nom: John Doe  
 Âge: 30 ans
 
-## Afficher âge moyen
- pas implémenter pour l'instant
+
+## Afficher Âge Moyen
+
+Cette fonctionnalité vise à identifier l'âge moyen de tous les employés enregistrés dans le système. Elle implique les étapes suivantes :
+
+1. **Calcul de l'Âge Moyen :** Le programme parcourt la liste des employés enregistrés et calcule la somme totale de leurs âges.
+    ```asm
+        pop ebx
+        add [compteur_add_spec], bl
+    ```
+
+2. **Diviser par le Nombre d'Employés :** Une fois la somme des âges obtenue, elle est divisée par le nombre total d'employés pour obtenir l'âge moyen.
+
+3. **Affichage du Résultat :** Le programme affiche ensuite l'âge moyen calculé à l'utilisateur.
+
+    ```assembly
+    fin_trouverAgeMoyen:
+        xor ecx, ecx         ; This sets the entire ecx register to 0
+        xor eax, eax         ; This sets the entire ecx register to 0
+        xor edx, edx 
+        mov cl, [nbEmployes]
+        mov al , [compteur_add_spec]
+        idiv ecx
+        mov [tmp], al
+        call afficherMessageAge
+        call affiche_nombre
+        call newlinefunc
+    ```
+
 ## Quitter le programme
 fonctionnalité  implémenter
 ## Auteurs

@@ -280,12 +280,12 @@ afficherEmploye:
 ;/////////////////////////////////////////////
 trouverAgeMoyen:
     mov esi, employes
-    mov dword [value], 0
+    mov ebx, Buffer
     trouverAgeMoyen_boucle:
         cmp byte [nbEmployes], 0
         je fin_trouverAgeMoyen1
+        mov al, [esi]
         mov ebx, Buffer
-        mov al, [esi]                   ; Charger le caractère courant dans AL
         inc esi                         ; Passer au caractère suivant dans le buffer
         mov dl, [compteur]
         mov ecx, [nbEmployes]
@@ -301,9 +301,7 @@ trouverAgeMoyen:
         not_digite_age:
         jmp trouverAgeMoyen_boucle            ; Continuer la boucle
         est_chiffre_chr_age:
-            mov [exchangeTmp], al
-            mov eax, [exchangeTmp]
-            mov [ebx], eax
+            mov [ebx], al
             inc ebx
             mov al, [esi]
             inc esi
@@ -315,9 +313,7 @@ trouverAgeMoyen:
             jg trouverAgeMoyen_boucle                    ; Si AL <= '9', c'est un chiffre, terminer la boucle
         jmp est_chiffre_chr_age
         fin_est_chiffre_age:
-            mov [exchangeTmp], al
-            mov eax, [exchangeTmp]
-            mov [ebx], eax
+            mov [ebx], al
             inc ebx
             mov edi, Buffer
             char_to_chifre_age:
@@ -339,22 +335,25 @@ trouverAgeMoyen:
         fin_chiffre_age:
         inc  byte [compteur]
         pop ebx
-        add [value], ebx
+        add [compteur_add_spec], bl
     jmp trouverAgeMoyen_boucle
     fin_trouverAgeMoyen1:
     call afficherMessageAlert1
+    mov byte [compteur], 0
     jmp _start
     fin_trouverAgeMoyen:
     xor ecx, ecx         ; This sets the entire ecx register to 0
+    xor eax, eax         ; This sets the entire ecx register to 0
+    xor edx, edx 
     mov cl, [nbEmployes]
-    mov eax, [value]
-    xor edx, edx  
+    mov al , [compteur_add_spec]
     idiv ecx
     mov [tmp], al
-    call newlinefunc
     call afficherMessageAge
     call affiche_nombre
     call newlinefunc
+    mov byte [compteur_add_spec], 0
+    mov byte [compteur], 0
     jmp _start
 
 
